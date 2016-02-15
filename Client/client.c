@@ -10,9 +10,9 @@ char *scan_id_pin(char *message){
     char pin[4]="";
 
     printf("ID:");
-    gets(ID);
+    scanf("%s",ID);
     printf("pin:");
-    gets(pin);
+    scanf("%s",pin);
     ID[strlen(ID)]=' ';
     strcpy(ID + strlen(ID),pin);
 
