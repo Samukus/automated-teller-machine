@@ -6,6 +6,7 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include <sys/msg.h>
+#include "path.h"
 
 
 size_t socket_init_broadcast(int *sock,int port);

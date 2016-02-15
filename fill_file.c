@@ -1,16 +1,22 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include "defs.h"
+#include "path.h"
+
+
 
 int main(){
     struct timeval time;
     gettimeofday(&time, NULL);
     time.tv_usec;
     srand(time.tv_usec);
+	char buf[64]="";
+	sprintf(buf,"touch %s\n",FILE_PATH );
+	system(buf);
 
 	printf("FILE_PATH:%s\n",FILE_PATH);
     FILE *fp;
-    fp=fopen(FILE_PATH,"w");
+    fp=fopen(FILE_PATH,"w+");
 	if(fp == NULL){
 		perror("Fopen");
 		return -1;
