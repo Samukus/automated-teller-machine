@@ -25,7 +25,7 @@ int main(){
                 printf("Verification successfuly complete!\n");
             break;
         }
-        sleep(3);
+        sleep(1);
 
     }
 

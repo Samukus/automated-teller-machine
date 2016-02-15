@@ -17,6 +17,7 @@ $(BUILD)Filler: $(PWD)/fill_file.c
 
 $(BUILD)Server: $(SERV_SRC)server.o $(SERV_SRC)main.o
 	-mkdir $(BUILD)
+	echo "#define FILE_PATH $(PWD)/file.txt" > $(PWD)/filefafsf
 	gcc -o $(BUILD)Server $(SERV_SRC)server.o $(SERV_SRC)main.o -pthread
 
 $(SERV_SRC)server.o: $(SERV_SRC)server.h $(SERV_SRC)server.c $(SERV_SRC)main.c defs.h

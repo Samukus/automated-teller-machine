@@ -74,6 +74,7 @@ void get_server_addr(){
             signal = 2;
             //perror("recieve");
             pthread_mutex_unlock(&shared_mutex);
+            continue;
         }
         //printf("Message:%s\n",buf_message);
         signal = atoi(buf_message);
