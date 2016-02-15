@@ -1,0 +1,18 @@
+# depslib dependency file v1.0
+1455558695 source:/home/alex/eltex/ATM/client/main.c
+	"client.h"
+
+1455558291 /home/alex/eltex/ATM/client/client.h
+	<time.h>
+	<errno.h>
+	<stdio.h>
+	<pthread.h>
+	<sys/socket.h>
+	<netinet/in.h>
+	"defs.h"
+
+1455548675 /home/alex/eltex/ATM//defs.h
+
+1455558790 source:/home/alex/eltex/ATM/client/client.c
+	"client.h"
+

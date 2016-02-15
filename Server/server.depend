@@ -1,0 +1,19 @@
+# depslib dependency file v1.0
+1455548166 source:/home/alex/eltex/ATM/server/main.c
+	"server.h"
+
+1455547821 /home/alex/eltex/ATM/server/server.h
+	"defs.h"
+	<pthread.h>
+	<stdio.h>
+	<errno.h>
+	<netinet/in.h>
+	<sys/msg.h>
+
+1455539333 /home/alex/eltex/ATM/server/defs.h
+
+1455548141 source:/home/alex/eltex/ATM/server/server.c
+	"server.h"
+
+1455548675 /home/alex/eltex/ATM//defs.h
+
