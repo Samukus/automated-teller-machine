@@ -23,7 +23,7 @@ char *scan_id_pin(char *message){
 int socket_init_udp(int *sock,int port){
 
     if ((*sock=socket(AF_INET,SOCK_DGRAM,0))<0){
-        //perror("Opening socket");
+        perror("Opening socket");
         return -1;
     }
 
@@ -41,7 +41,7 @@ int socket_init_udp(int *sock,int port){
 
     int i = 0;
     while(bind(*sock,(struct sockaddr *)&server, sizeof(server)) < 0){
-        //perror("Binding error");
+        perror("Binding error");
         continue;
     }
     return 0;
@@ -59,7 +59,7 @@ void get_server_addr(){
 
         if(socket_rcv < 0){
             close(socket_rcv);
-            //perror("init");
+            perror("init");
         }
 
         pthread_mutex_lock(&shared_mutex);
@@ -72,7 +72,7 @@ void get_server_addr(){
         if( n <= 0 ){
             close(socket_rcv);
             signal = 2;
-            //perror("recieve");
+            perror("recieve");
             pthread_mutex_unlock(&shared_mutex);
             continue;
         }
@@ -82,8 +82,9 @@ void get_server_addr(){
 
         pthread_mutex_unlock(&shared_mutex);
 
-        //printf("Signal: %d   Port: %d\n\n",signal,current_port);
+        printf("Signal: %d   Port: %d\n\n",signal,current_port);
         close(socket_rcv);
+        sleep(1);
     }
 };
 

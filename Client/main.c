@@ -1,13 +1,12 @@
 #include "client.h"
 
 int main(){
-
+    signal=2;
     pthread_t thread_brcst;
     pthread_create(&thread_brcst, NULL, get_server_addr, NULL);
-
     while(1){
         clear_console();
-        if( signal == 2 || signal == 0 ){
+        if( signal == 2 ){
             printf("Please wait...\n");
             sleep(1);
             continue;

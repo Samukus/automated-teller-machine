@@ -11,12 +11,12 @@
 	<netinet/in.h>
 	"defs.h"
 
-1455564712 /home/alex/eltex/ATM//defs.h
+1455568780 /home/alex/eltex/ATM//defs.h
 
 1455558790 source:/home/alex/eltex/ATM/client/client.c
 	"client.h"
 
-1455560056 source:/home/alex/eltex/ATM/Client/main.c
+1455631283 source:/home/alex/eltex/ATM/Client/main.c
 	"client.h"
 
 1455558291 /home/alex/eltex/ATM/Client/client.h
@@ -28,6 +28,6 @@
 	<netinet/in.h>
 	"defs.h"
 
-1455566228 source:/home/alex/eltex/ATM/Client/client.c
+1455631517 source:/home/alex/eltex/ATM/Client/client.c
 	"client.h"
 
