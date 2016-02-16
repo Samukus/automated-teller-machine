@@ -46,7 +46,8 @@ $(CLIENT_SRC)main.o: $(CLIENT_SRC)main.c defs.h
 	-echo "#define FILE_PATH \"$(PWD)/file.txt\"" > $(PWD)/path.h
 	gcc -c $(CLIENT_SRC)main.c -I $(PWD) -o $(CLIENT_SRC)main.o -pthread
 
-
+install:
+	./Build/Filler
 
 
 clean:
