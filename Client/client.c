@@ -82,19 +82,29 @@ void get_server_addr(){
 
         pthread_mutex_unlock(&shared_mutex);
 
-        printf("Signal: %d   Port: %d\n\n",signal,current_port);
+        //printf("Signal: %d   Port: %d\n\n",signal,current_port);
         close(socket_rcv);
         sleep(1);
     }
 };
 
-int try_verification(struct sockaddr_in server_addr,int current_port){
+void try_verification(){
+
+    pthread_mutex_lock(&status_mutex);
+    if(thread_status == 1){
+        pthread_mutex_unlock(&status_mutex);
+        return;
+    }
+    else
+        thread_status = 1;
+    pthread_mutex_unlock(&status_mutex);
 
     char message[MSG_BUF_LEN]="";
     char msg_buf[MSG_BUF_LEN]="";
     char ID[16]="";
     char pin[4]="";
 
+    printf("Type ID and PIN code\n");
     printf("ID:");
     gets(ID);
     printf("pin:");
@@ -105,6 +115,10 @@ int try_verification(struct sockaddr_in server_addr,int current_port){
     strcpy(msg_buf + sizeof(ID)+1,pin);
 
     if(signal == 2){
+        printf("Connection problem\n");
+        pthread_mutex_lock(&status_mutex);
+        thread_status = 0;
+        pthread_mutex_unlock(&status_mutex);
         return -2;
     }
 
@@ -117,21 +131,32 @@ int try_verification(struct sockaddr_in server_addr,int current_port){
         //perror("ERROR opening socket");
         close(my_sock);
         pthread_mutex_unlock(&shared_mutex);
+        printf("Connection problem\n");
+        pthread_mutex_lock(&status_mutex);
+        thread_status = 0;
+        pthread_mutex_unlock(&status_mutex);
         return -2;
     }
+
+    printf("Trying connect to server\n");
+
+    pthread_mutex_unlock(&shared_mutex);
 
     if (connect(my_sock,(struct sockaddr *)&server_addr,sizeof(struct sockaddr_in)) < 0){
         //perror("ERROR connecting");
         close(my_sock);
         pthread_mutex_unlock(&shared_mutex);
+        printf("Connection problem\n");
+        pthread_mutex_lock(&status_mutex);
+        thread_status = 0;
+        pthread_mutex_unlock(&status_mutex);
         return -2;
     }
 
+
     char ipAddress[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &(server_addr.sin_addr), ipAddress, INET_ADDRSTRLEN);
-
-    pthread_mutex_unlock(&shared_mutex);
-
+    printf("Connection to %s complete\n",ipAddress);
 
    // strcpy(msg_buf,message);
     msg_buf[strlen(msg_buf)] = '\n';
@@ -139,15 +164,24 @@ int try_verification(struct sockaddr_in server_addr,int current_port){
 
     if(signal == 2){
         close(my_sock);
+        printf("Connection problem\n");
+        pthread_mutex_lock(&status_mutex);
+        thread_status = 0;
+        pthread_mutex_unlock(&status_mutex);
         return -2;
     }
 
     int bytes_snd = send(my_sock, msg_buf, strlen(msg_buf)+1, 0);
     if(bytes_snd >= 0);
         //printf("%-25s --> [%s:%d]\n",msg_buf,ipAddress,current_port);
+    printf("Sending verification data to %s\n",ipAddress);
 
     if(signal == 2){
         close(my_sock);
+        printf("Connection problem\n");
+        pthread_mutex_lock(&status_mutex);
+        thread_status = 0;
+        pthread_mutex_unlock(&status_mutex);
         return -2;
     }
 
@@ -155,18 +189,34 @@ int try_verification(struct sockaddr_in server_addr,int current_port){
     int bytes_rcv = recv(my_sock, msg_buf, MSG_BUF_LEN, 0);
     if(bytes_rcv >= 0);
         //printf("%-25s <-- [%s:%d]\n",msg_buf,ipAddress,current_port);
+    printf("Recieving verification data from %s\n",ipAddress);
 
     if(signal == 2){
         close(my_sock);
+        printf("Connection problem\n");
+        pthread_mutex_lock(&status_mutex);
+        thread_status = 0;
+        pthread_mutex_unlock(&status_mutex);
         return -2;
     }
 
     close(my_sock);
 
-    if(msg_buf[0] == '1')
+    if(msg_buf[0] == '1'){
+        printf("Verification successfuly complete\n\n");
+        pthread_mutex_lock(&status_mutex);
+        thread_status = 0;
+        pthread_mutex_unlock(&status_mutex);
         return 0;
-    else
+    }
+
+    else{
+        printf("Verification failed\n\n");
+        pthread_mutex_lock(&status_mutex);
+        thread_status = 0;
+        pthread_mutex_unlock(&status_mutex);
         return -1;
+    }
 };
 
 

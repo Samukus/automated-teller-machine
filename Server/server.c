@@ -63,6 +63,8 @@ size_t socket_init_broadcast(int *sock,int port){
 
     int BroadcastPermission = 1;
 
+//    interface
+
     if ( (*sock = socket(AF_INET,SOCK_DGRAM,0)) < 0){
         perror("Error opening socket");
         return -1;
@@ -79,9 +81,9 @@ size_t socket_init_broadcast(int *sock,int port){
 size_t send_msg(int sock,struct sockaddr_in addr,char *msg,size_t len){
     size_t send_bytes = sendto (sock,msg, len, 0,(struct sockaddr *)&addr, sizeof (addr));
     if( (int)send_bytes < 0 ){
-        perror("Sending\n");
+        perror("Sending");
     }
-//    printf("To port(%d) Message:%s --- bytes[%d]\n",(int)ntohs(addr.sin_port),msg,send_bytes);
+    //printf("To port(%d) Message:%s --- bytes[%d]\n",(int)ntohs(addr.sin_port),msg,send_bytes);
     return send_bytes;
 };
 
@@ -91,7 +93,7 @@ void *udp_broadcast(void *arg){
     struct sockaddr_in broadcast_senders;
     broadcast_senders.sin_family = AF_INET;
     broadcast_senders.sin_port = htons(PORT_UDP);
-    broadcast_senders.sin_addr.s_addr = htonl(INADDR_BROADCAST);
+    broadcast_senders.sin_addr.s_addr = 0;
 
     while(1){
 
@@ -148,19 +150,26 @@ void *listner(void *arg){
         listen(sockfd,1);
 
         int clilen;
+
         int newsockfd = accept(sockfd,(struct sockaddr *) &cli_addr, &clilen);
+
+
         if (newsockfd < 0){
             perror("ERROR on accept");
             continue;
         }
 
+        struct client_verification_arg client_arg;
+
+        client_arg.newsockfd = newsockfd;
+        client_arg.cli_addr = cli_addr;
+
         pthread_mutex_lock(&shared_mutex);
         udp_broadcast_arg.number_of_clients++;
         pthread_mutex_unlock(&shared_mutex);
 
-
         pthread_t client_thr;
-        pthread_create(&client_thr, NULL, client_verification, &newsockfd);
+        pthread_create(&client_thr, NULL, client_verification, &client_arg);
 
         close(sockfd);
     }
@@ -169,20 +178,39 @@ void *listner(void *arg){
 };
 
 void *client_verification(void *arg){
-    int sock = *(int *)arg;
+
+    struct client_verification_arg *cli_arg = (struct client_verification_arg *)arg;
+
+    int sock = cli_arg->newsockfd;
+
+    struct sockaddr_in cli_addr = cli_arg->cli_addr;
+
+    char ipAddress[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &(cli_addr.sin_addr), ipAddress, INET_ADDRSTRLEN);
+    //printf("Client:[%s] - Connected\n",ipAddress);
+
     int bytes_recv;
     int bytes_snd;
     char message[MSG_BUF_LEN]="";
 
 	if ( (bytes_recv = read(sock,&message[0],sizeof(message))) < 0 )
-        //perror("ERROR reading from socket");
+        perror("ERROR reading from socket");
 
     message[bytes_recv] = '\0';
 
-    if(verification(message) == 0)
+
+
+    if(verification(message) == 0){
         bytes_snd = write(sock, "1", 1);
-    else
+        printf("Client:[%s] - Verification Complete\n",ipAddress);
+        //printf("Send bytes: %d\n",bytes_snd);
+    }
+
+    else{
         bytes_snd = write(sock, "0", 1);
+        printf("Client:[%s] - Verification Failed\n",ipAddress);
+        //printf("Send bytes: %d\n",bytes_snd);
+    }
 
     if(bytes_snd < 0)
         perror("ERROR sending to socket");
@@ -192,6 +220,9 @@ void *client_verification(void *arg){
     pthread_mutex_unlock(&shared_mutex);
 
 	close(sock);
+
+    //printf("Client:[%s] - Disconnected\n",ipAddress);
+
 };
 
 int verification(char *msg){

@@ -39,6 +39,10 @@ int verification(char *msg);
 
 pthread_mutex_t shared_mutex;
 
+struct client_verification_arg{
+    int newsockfd;
+    struct sockaddr_in cli_addr;
+};
 
 struct thread_broadcasting_argument{
     int port_current;

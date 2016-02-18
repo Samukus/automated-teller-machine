@@ -15,5 +15,22 @@
 1455548141 source:/home/alex/eltex/ATM/server/server.c
 	"server.h"
 
-1455548675 /home/alex/eltex/ATM//defs.h
+1455631639 /home/alex/eltex/ATM//defs.h
+
+1455832952 source:/home/alex/eltex/ATM/Server/main.c
+	"server.h"
+
+1455833039 /home/alex/eltex/ATM/Server/server.h
+	"defs.h"
+	<pthread.h>
+	<stdio.h>
+	<errno.h>
+	<netinet/in.h>
+	<sys/msg.h>
+	"path.h"
+
+1455726103 /home/alex/eltex/ATM//path.h
+
+1455831198 source:/home/alex/eltex/ATM/Server/server.c
+	"server.h"
 
